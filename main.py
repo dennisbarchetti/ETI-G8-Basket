@@ -1,18 +1,43 @@
 import cv2 as cv
 import numpy as np
 import imutils
+import sys
 
 
 class StandardVideoOperations:
+
     KNN = cv.createBackgroundSubtractorKNN()
+
+    def set_left(self, upper_left, bottom_right):
+        if (len(upper_left) != 2 or len(bottom_right)) != 2:
+            sys.exit("error: upper_left and bottom_right must be arrays with 2 items")
+        if not all(isinstance(x, int) for x in upper_left) or not all(isinstance(x, int) for x in bottom_right):
+            sys.exit("error: upper_left and bottom_right must contain only integers")
+        self.upper_left_LEFT = upper_left
+        self.bottom_right_LEFT = bottom_right
+
+    def set_right(self, upper_left, bottom_right):
+        if (len(upper_left) != 2 or len(bottom_right)) != 2:
+            sys.exit("error: upper_left and bottom_right must be arrays with 2 items")
+        if not all(isinstance(x, int) for x in upper_left) or not all(isinstance(x, int) for x in bottom_right):
+            sys.exit("error: upper_left and bottom_right must contain only integers")
+        self.upper_left_RIGHT = upper_left
+        self.bottom_right_RIGHT = bottom_right
 
     @staticmethod
     def video_cutter(frame_hsv, upper_left, bottom_right):
+        if(len(upper_left) != 2 or len(bottom_right)) != 2:
+            sys.exit("error: upper_left and bottom_right must be arrays with 2 items")
+        if not all(isinstance(x, int) for x in upper_left) or not all(isinstance(x, int) for x in bottom_right):
+            sys.exit("error: upper_left and bottom_right must contain only integers")
+        if not isinstance(frame_hsv, np.ndarray):
+            sys.exit("error: frame_hsv must be of type numpy.ndarray")
+        if frame_hsv.ndim != 3:
+            sys.exit("error: frame_hsv should be a matrix of three dimensions")
         rect_frame = frame_hsv[upper_left[1]: bottom_right[1], upper_left[0]: bottom_right[0]]
         return rect_frame
-    
-    @staticmethod
-    def cut_left(startingFrame):
+
+    def cut_left(self, startingFrame):
         """
         # 1° quarto
         upper_left = (455, 955)
@@ -23,14 +48,19 @@ class StandardVideoOperations:
         upper_left = (485, 950)
         bottom_right = (685, 1150)
         """
+        """
         # 3° 4° quarto
         upper_left = (540, 940)
         bottom_right = (740, 1140)
-        leftCut = StandardVideoOperations.video_cutter(startingFrame, upper_left, bottom_right)
+        """
+        if not isinstance(startingFrame, np.ndarray):
+            sys.exit("error: startingFrame must be of type numpy.ndarray")
+        if startingFrame.ndim != 3:
+            sys.exit("error: startingFrame should be a matrix of three dimensions")
+        leftCut = StandardVideoOperations.video_cutter(startingFrame, self.upper_left_LEFT, self.bottom_right_LEFT)
         return leftCut
 
-    @staticmethod
-    def cut_right(startingFrame):
+    def cut_right(self, startingFrame):
         """
         # 1° quarto
         upper_left = (3145, 895)
@@ -41,10 +71,16 @@ class StandardVideoOperations:
         upper_left = (3185, 910)
         bottom_right = (3385, 1110)
         """
+        """
         # 3° 4° quarto
         upper_left = (3225, 900)
         bottom_right = (3425, 1100)
-        rightCut = StandardVideoOperations.video_cutter(startingFrame, upper_left, bottom_right)
+        """
+        if not isinstance(startingFrame, np.ndarray):
+            sys.exit("error: startingFrame must be of type numpy.ndarray")
+        if startingFrame.ndim != 3:
+            sys.exit("error: startingFrame should be a matrix of three dimensions")
+        rightCut = StandardVideoOperations.video_cutter(startingFrame, self.upper_left_RIGHT, self.bottom_right_RIGHT)
         return rightCut
     
     @staticmethod
@@ -58,6 +94,10 @@ class StandardVideoOperations:
 
     @staticmethod
     def get_hsvmask_on_ball(frame_hsv):
+        if not isinstance(frame_hsv, np.ndarray):
+            sys.exit("error: frame_hsv must be of type numpy.ndarray")
+        if frame_hsv.ndim != 3:
+            sys.exit("error: frame_hsv should be a matrix of three dimensions")
         lower_red = np.array([160, 75, 85])
         upper_red = np.array([180, 255, 255])
         mask = cv.inRange(frame_hsv, lower_red, upper_red)
@@ -67,8 +107,12 @@ class StandardVideoOperations:
         return res
 
     @staticmethod
-    def get_knn_on_mask(mask):
-        frame_knn = StandardVideoOperations.KNN.apply(mask)
+    def get_knn_on_frame(frame):
+        if not isinstance(frame, np.ndarray):
+            sys.exit("error: mask must be of type numpy.ndarray")
+        if frame.ndim != 3:
+            sys.exit("error: mask mask be a matrix of two dimensions")
+        frame_knn = StandardVideoOperations.KNN.apply(frame)
         return frame_knn
 
     @staticmethod
@@ -86,6 +130,10 @@ class StandardVideoOperations:
 
     @staticmethod
     def countWhitePixels(rows, colRange, greyScaleFrame):
+        if not all(isinstance(row, int) for row in rows) or not all(isinstance(col, int) for col in colRange):
+            sys.exit("error: rows and colRange must contain only integers")
+        if greyScaleFrame.ndim != 2:
+            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
         for row in rows:
             consecutiveWhitePixels = 0
             consecutiveBlackPixels = 0
@@ -103,42 +151,62 @@ class StandardVideoOperations:
 
     @staticmethod
     def spotBallOnTop_right(greyScaleFrame):
+        if greyScaleFrame.ndim != 2:
+            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
         rows = [50, 55, 60]
         return StandardVideoOperations.countWhitePixels(rows, range(90, 150), greyScaleFrame)
 
     @staticmethod
     def spotBallOnMedium_right(greyScaleFrame):
+        if greyScaleFrame.ndim != 2:
+            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
         rows = [100, 105, 110]
         return StandardVideoOperations.countWhitePixels(rows, range(90, 150), greyScaleFrame)
 
     @staticmethod
     def spotBallOnBottom_right(greyScaleFrame):
+        if greyScaleFrame.ndim != 2:
+            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
         rows = [160, 165, 170]
         return StandardVideoOperations.countWhitePixels(rows, range(75, 175), greyScaleFrame)
 
     @staticmethod
     def spotBallOnTop_left(greyScaleFrame):
+        if greyScaleFrame.ndim != 2:
+            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
         rows = [85, 90, 95]
         return StandardVideoOperations.countWhitePixels(rows, range(80, 140), greyScaleFrame)
 
     @staticmethod
     def spotBallOnMedium_left(greyScaleFrame):
+        if greyScaleFrame.ndim != 2:
+            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
         rows = [125, 130, 135]
         return StandardVideoOperations.countWhitePixels(rows, range(80, 140), greyScaleFrame)
 
     @staticmethod
     def spotBallOnBottom_left(greyScaleFrame):
+        if greyScaleFrame.ndim != 2:
+            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
         rows = [160, 165, 170]
         return StandardVideoOperations.countWhitePixels(rows, range(70, 160), greyScaleFrame)
 
 
 svo = StandardVideoOperations()
 capture = cv.VideoCapture("/path/tempo.asf")
+# 1° quarto
+# svo.set_left((455, 955), (655, 1155))
+# svo.set_right((3145, 895), (3345, 1095))
+# 2° quarto
+# svo.set_left((485, 950), (685, 1150))
+# svo.set_right((3185, 910), (3385, 1110))      # provare ad alzare la RoI nella parte dx a 900 per il secondo quarto per vedere se non vengono segnati più errori dovuti al monitor 
+# 3° 4° quarto
+svo.set_left((540, 940), (740, 1140))
+svo.set_right((3225, 900), (3425, 1100))
 
 if not capture.isOpened:
     print('Unable to open')
     exit(0)
-
 top_frame = middle_frame = bottom_frame = frame_counter = last_score_frame = 0
 
 upper_left1 = (80, 85)
@@ -161,7 +229,7 @@ while True:
     # blurred = cv.medianBlur(blurred, 5)
     hsvFrame = cv.cvtColor(leftCut, cv.COLOR_BGR2HSV)
     res = svo.get_hsvmask_on_ball(hsvFrame)
-    finalFrame = svo.get_knn_on_mask(res)
+    finalFrame = svo.get_knn_on_frame(res)
     returnFrame = cv.cvtColor(finalFrame, cv.COLOR_GRAY2BGR)
 
     if frame_counter > 10:
@@ -191,9 +259,10 @@ while True:
         if top_frame - last_score_frame <  0 and frame_counter - last_score_frame == 5:
             print("score con precauzione top")
 
+
     cv.imshow("returnFrame", returnFrame)
     cv.imshow("originalFrame", leftCut)
-    
+
     key = cv.waitKey(1)
     if key == 27:
         break
