@@ -7,7 +7,9 @@ import threading
 
 class StandardVideoOperations:
 
-    KNN = cv.createBackgroundSubtractorKNN()
+    # check whether there are no more problems with 2 KNN subtractors
+    KNN_SX = cv.createBackgroundSubtractorKNN()
+    KNN_DX = cv.createBackgroundSubtractorKNN()
     
     def __init__(self):
         self.upper_left_LEFT = (0, 0)
@@ -84,13 +86,23 @@ class StandardVideoOperations:
         return res
 
     @staticmethod
-    def get_knn_on_frame(frame):
+    def get_knn_on_left_frame(frame):
         if not isinstance(frame, np.ndarray):
             sys.exit("error: frame must be of type numpy.ndarray")
         if frame.ndim != 3:
             sys.exit("error: frame mask be a matrix of two dimensions")
-        frame_knn = StandardVideoOperations.KNN.apply(frame)
+        frame_knn = StandardVideoOperations.KNN_SX.apply(frame)
         return frame_knn
+
+    @staticmethod
+    def get_knn_on_right_frame(frame):
+        if not isinstance(frame, np.ndarray):
+            sys.exit("error: frame must be of type numpy.ndarray")
+        if frame.ndim != 3:
+            sys.exit("error: frame mask be a matrix of two dimensions")
+        frame_knn = StandardVideoOperations.KNN_DX.apply(frame)
+        return frame_knn
+
 
     @staticmethod
     def find_circles(frame_to_scan, frame_to_design):
@@ -192,7 +204,7 @@ top_frameSX = middle_frameSX = last_score_frameSX = 0
 top_frameDX = middle_frameDX = last_score_frameDX = 0
 
 
-def main_sx():
+def main_left():
     global svo
     global startingFrame
     global frame_counter
@@ -217,7 +229,7 @@ def main_sx():
     # blurred = cv.medianBlur(blurred, 5)
     hsvFrame = cv.cvtColor(leftCut, cv.COLOR_BGR2HSV)
     res = svo.get_hsvmask_on_ball(hsvFrame)
-    finalFrame = svo.get_knn_on_frame(res)
+    finalFrame = svo.get_knn_on_left_frame(res)
     leftResult = cv.cvtColor(finalFrame, cv.COLOR_GRAY2BGR)
 
     if frame_counter > 10:
@@ -246,7 +258,7 @@ def main_sx():
             print("scoreSX con precauzione top")
 
 
-def main_dx():
+def main_right():
     global svo
     global startingFrame
     global frame_counter
@@ -271,7 +283,7 @@ def main_dx():
     # blurred = cv.medianBlur(blurred, 5)
     hsvFrame = cv.cvtColor(rightCut, cv.COLOR_BGR2HSV)
     res = svo.get_hsvmask_on_ball(hsvFrame)
-    finalFrame = svo.get_knn_on_frame(res)
+    finalFrame = svo.get_knn_on_right_frame(res)
     rightResult = cv.cvtColor(finalFrame, cv.COLOR_GRAY2BGR)
 
     if frame_counter > 10:
@@ -311,17 +323,17 @@ while True:
     leftResult = startingFrame.copy()
     rightResult = startingFrame.copy()
     
-    process_sx = threading.Thread(target=main_sx)
-    process_sx.start()
+    thread_left = threading.Thread(target=main_left)
+    thread_left.start()
     
-    process_dx = threading.Thread(target=main_dx)
-    process_dx.start()
+    thread_right = threading.Thread(target=main_right)
+    thread_right.start()
     
-    process_sx.join()
+    thread_left.join()
     cv.imshow("originalFrameSX", leftCut)
     cv.imshow("returnFrameSX", leftResult)
     
-    process_dx.join()
+    thread_right.join()
     cv.imshow("originalFrameDX", rightCut)
     cv.imshow("returnFrameDX", rightResult)
     
