@@ -1,13 +1,12 @@
 import cv2 as cv
 import numpy as np
-import imutils
+# import imutils
 import sys
 import threading
 
 
 class StandardVideoOperations:
 
-    # check whether there are no more problems with 2 KNN subtractors
     KNN_SX = cv.createBackgroundSubtractorKNN()
     KNN_DX = cv.createBackgroundSubtractorKNN()
     
@@ -103,7 +102,7 @@ class StandardVideoOperations:
         frame_knn = StandardVideoOperations.KNN_DX.apply(frame)
         return frame_knn
 
-
+    """
     @staticmethod
     def find_circles(frame_to_scan, frame_to_design):
         cnts = cv.findContours(frame_to_scan.copy(), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
@@ -114,6 +113,7 @@ class StandardVideoOperations:
                 if 10 < radius < 25:
                     cv.circle(frame_to_design, (int(x), int(y)), int(radius), (255, 255, 255), -1)
         return frame_to_design
+	"""
 
     # to put something about the work done with Optical Flow, see the file on the folder
 
@@ -192,8 +192,8 @@ capture = cv.VideoCapture("/path/video.asf")
 # svo.set_right((3185, 900), (3385, 1100))
 
 # set for 3° 4° quarter
-svo.set_left((540, 940), (740, 1140))
-svo.set_right((3225, 900), (3425, 1100))
+# svo.set_left((540, 940), (740, 1140))
+# svo.set_right((3225, 900), (3425, 1100))
 
 if not capture.isOpened:
     print('Unable to open')
@@ -239,6 +239,7 @@ def main_left():
             leftResult = svo.draw_rectangle(leftResult, upper_left1, bottom_right1, "green")
         else:
             leftResult = svo.draw_rectangle(leftResult, upper_left1, bottom_right1, "red")
+
         """
         if svo.spotBallOnMedium_left(finalFrame) and 2 < (frame_counter - top_frameSX) < 8:
             middle_frameSX = frame_counter
@@ -247,6 +248,7 @@ def main_left():
         else:
             leftResult = svo.draw_rectangle(leftResult, upper_left2, bottom_right2, "red")
         """
+
         if svo.spotBallOnBottom_left(finalFrame) and 3 < (frame_counter - top_frameSX) < 25 and (frame_counter - last_score_frameSX) > 50 and (frame_counter - last_score_frameDX) > 50:
             last_score_frameSX = frame_counter
             print("score SX:", last_score_frameSX)
@@ -293,6 +295,7 @@ def main_right():
             rightResult = svo.draw_rectangle(rightResult, upper_left1, bottom_right1, "green")
         else:
             rightResult = svo.draw_rectangle(rightResult, upper_left1, bottom_right1, "red")
+
         """
         if svo.spotBallOnMedium_right(finalFrame)  and 2 < (frame_counter - top_frameDX) < 8:
             middle_frameDX = frame_counter
@@ -301,6 +304,7 @@ def main_right():
         else:
             rightResult = svo.draw_rectangle(returnFrame, upper_left2, bottom_right2, "red")
         """
+        
         if svo.spotBallOnBottom_right(finalFrame) and 3 < (frame_counter - top_frameDX) < 25 and (frame_counter - last_score_frameDX) > 50 and (frame_counter - last_score_frameSX) > 50:
             last_score_frameDX = frame_counter
             print("score DX:", last_score_frameDX)
