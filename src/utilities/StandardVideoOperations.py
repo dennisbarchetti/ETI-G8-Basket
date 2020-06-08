@@ -192,7 +192,7 @@ class StandardVideoOperations:  # class for manage the operation on the video
 
     # return true if the ball is spotted in the middle of the basket in the left frame
     @staticmethod
-    def spotBallOnMedium_left(greyScaleFrame):
+    def spotBallOnMiddle_left(greyScaleFrame):
         if greyScaleFrame.ndim != 2:
             sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
         rows = [125, 130, 135]
