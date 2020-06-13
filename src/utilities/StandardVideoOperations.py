@@ -20,7 +20,7 @@ class StandardVideoOperations:  # class for manage the operation on the video
     # set the values for the left ROI
     def set_left(self, upper_left, bottom_right):
         if (len(upper_left) != 2 or len(bottom_right)) != 2:
-            sys.exit("error: upper_left and bottom_right must be arrays with 2 items")
+            sys.exit("error: upper_left and bottom_right must be tuples with 2 items")
         if not all(isinstance(x, int) for x in upper_left) or not all(isinstance(x, int) for x in bottom_right):
             sys.exit("error: upper_left and bottom_right must contain only integers")
         self.upper_left_LEFT = upper_left
@@ -29,7 +29,7 @@ class StandardVideoOperations:  # class for manage the operation on the video
     # set the values for the right ROI
     def set_right(self, upper_left, bottom_right):
         if (len(upper_left) != 2 or len(bottom_right)) != 2:
-            sys.exit("error: upper_left and bottom_right must be arrays with 2 items")
+            sys.exit("error: upper_left and bottom_right must be tuples with 2 items")
         if not all(isinstance(x, int) for x in upper_left) or not all(isinstance(x, int) for x in bottom_right):
             sys.exit("error: upper_left and bottom_right must contain only integers")
         self.upper_left_RIGHT = upper_left
@@ -39,14 +39,14 @@ class StandardVideoOperations:  # class for manage the operation on the video
     @staticmethod
     def video_cutter(frame, upper_left, bottom_right):
         if(len(upper_left) != 2 or len(bottom_right)) != 2:
-            sys.exit("error: upper_left and bottom_right must be arrays with 2 items")
+            sys.exit("error: upper_left and bottom_right must be tuples with 2 items")
         if not all(isinstance(x, int) for x in upper_left) or not all(isinstance(x, int) for x in bottom_right):
             sys.exit("error: upper_left and bottom_right must contain only integers")
         if not isinstance(frame, np.ndarray):
             sys.exit("error: frame must be of type numpy.ndarray")
         if frame.ndim != 3:
             sys.exit("error: frame should be a matrix of three dimensions")
-        rect_frame = frame[upper_left[1]: bottom_right[1], upper_left[0]: bottom_right[0]]
+        rect_frame = frame[upper_left[1]:bottom_right[1], upper_left[0]:bottom_right[0]]
         return rect_frame
 
     # cut the frame with the ROI values setted with set_left method
@@ -91,12 +91,12 @@ class StandardVideoOperations:  # class for manage the operation on the video
         lower_red = np.array([160, 75, 85])
         upper_red = np.array([180, 255, 255])
         mask = cv.inRange(frame_hsv, lower_red, upper_red)
-        mask = cv.morphologyEx(mask, cv.MORPH_OPEN,(5, 5), iterations=1)
+        mask = cv.morphologyEx(mask, cv.MORPH_OPEN, (5, 5), iterations=1)
         mask = cv.dilate(mask, None, iterations=2)
         res = cv.bitwise_and(frame_hsv, frame_hsv, mask=mask)
         return res
 
-    # apply the knn method on the left frame
+    # apply the knn background subtractor on the left frame
     @staticmethod
     def get_knn_on_left_frame(frame):
         if not isinstance(frame, np.ndarray):
@@ -106,7 +106,7 @@ class StandardVideoOperations:  # class for manage the operation on the video
         frame_knn = StandardVideoOperations.KNN_SX.apply(frame)
         return frame_knn
 
-    # apply the knn method on the left frame
+    # apply the knn background subtractor on the left frame
     @staticmethod
     def get_knn_on_right_frame(frame):
         if not isinstance(frame, np.ndarray):
@@ -116,7 +116,7 @@ class StandardVideoOperations:  # class for manage the operation on the video
         frame_knn = StandardVideoOperations.KNN_DX.apply(frame)
         return frame_knn
 
-    # find the circles from counturns 
+    # find circles from counturns 
     @staticmethod
     def find_circles(frame_to_scan, frame_to_design):
         if not isinstance(frame_to_scan, np.ndarray):
@@ -158,30 +158,6 @@ class StandardVideoOperations:  # class for manage the operation on the video
                         return True
         return False
 
-    # return true if the ball is spotted above the basket in the right frame
-    @staticmethod
-    def spotBallOnTop_right(greyScaleFrame):
-        if greyScaleFrame.ndim != 2:
-            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
-        rows = [50, 55, 60]
-        return StandardVideoOperations.countWhitePixels(rows, range(90, 150), greyScaleFrame)
-
-    # return true if the ball is spotted in the middle of the basket in the right frame
-    @staticmethod
-    def spotBallOnMiddle_right(greyScaleFrame):
-        if greyScaleFrame.ndim != 2:
-            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
-        rows = [100, 105, 110]
-        return StandardVideoOperations.countWhitePixels(rows, range(90, 150), greyScaleFrame)
-
-    # return true if the ball is spotted below the basket in the right frame
-    @staticmethod
-    def spotBallOnBottom_right(greyScaleFrame):
-        if greyScaleFrame.ndim != 2:
-            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
-        rows = [160, 165, 170]
-        return StandardVideoOperations.countWhitePixels(rows, range(75, 175), greyScaleFrame)
-
     # return true if the ball is spotted above the basket in the left frame
     @staticmethod
     def spotBallOnTop_left(greyScaleFrame):
@@ -205,3 +181,27 @@ class StandardVideoOperations:  # class for manage the operation on the video
             sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
         rows = [160, 165, 170]
         return StandardVideoOperations.countWhitePixels(rows, range(70, 160), greyScaleFrame)
+
+    # return true if the ball is spotted above the basket in the right frame
+    @staticmethod
+    def spotBallOnTop_right(greyScaleFrame):
+        if greyScaleFrame.ndim != 2:
+            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
+        rows = [50, 55, 60]
+        return StandardVideoOperations.countWhitePixels(rows, range(90, 150), greyScaleFrame)
+
+    # return true if the ball is spotted in the middle of the basket in the right frame
+    @staticmethod
+    def spotBallOnMiddle_right(greyScaleFrame):
+        if greyScaleFrame.ndim != 2:
+            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
+        rows = [100, 105, 110]
+        return StandardVideoOperations.countWhitePixels(rows, range(90, 150), greyScaleFrame)
+
+    # return true if the ball is spotted below the basket in the right frame
+    @staticmethod
+    def spotBallOnBottom_right(greyScaleFrame):
+        if greyScaleFrame.ndim != 2:
+            sys.exit("error: greyScaleFrame must be a matrix of two dimensions")
+        rows = [160, 165, 170]
+        return StandardVideoOperations.countWhitePixels(rows, range(75, 175), greyScaleFrame)

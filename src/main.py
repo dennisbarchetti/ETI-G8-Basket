@@ -56,14 +56,14 @@ def main_left():
 
         if svo.spotBallOnBottom_left(finalFrame) and 3 < (frame_counter - top_frameSX) < 25 and (frame_counter - last_score_frameSX) > 50 and (frame_counter - last_score_frameDX) > 50:  # ricerchiamo la presenza della palla nel rettangolo sotto il canestro
             last_score_frameSX = frame_counter  # se e' presente dopo essere stata rilevata nel rettangolo sopra tra 3 e 25 frame prima e l’ultimo score e' stato segnato almeno 50 frame fa salviamo il numero del frame
-            score_SX +=1  # incremento del contatore del numero di canetri rilevati a sinistra
+            score_SX += 1  # incremento del contatore del numero di canetri rilevati a sinistra
             print("Score SX numero", score_SX, "al frame:", last_score_frameSX)  # segnaliamo in output il frame attuale a cui e' stato rilevato il canestro sinistro
             leftResult = svo.draw_rectangle(leftResult, upper_left3, bottom_right3, "green")  # coloriamo il rettangolo di verde
         else:
             leftResult = svo.draw_rectangle(leftResult, upper_left3, bottom_right3, "red")  # altrimenti lasciamo il rettangolo colorato di rosso
 
         # questa parte e' stata utilizzata per valutare che non venisse segnalata nuovamente la presenza della palla nel rettangolo in alto
-        if top_frameSX - last_score_frameSX <  0 and frame_counter - last_score_frameSX == 5:  # effettuiamo un controllo 5 frame dopo che e' stato segnalato il canestro per valutare se la palla e' stata rilevata nuovamente
+        if (top_frameSX - last_score_frameSX) <  0 and (frame_counter - last_score_frameSX) == 5:  # effettuiamo un controllo 5 frame dopo che e' stato segnalato il canestro per valutare se la palla e' stata rilevata nuovamente
             print("Score SX numero", score_SX, "con precauzione top")  # se la condizione e' verificata segnaliamo in output che il canestro e' stato segnato con una ulteriore precauzione
 
 
@@ -119,14 +119,14 @@ def main_right():
         
         if svo.spotBallOnBottom_right(finalFrame) and 3 < (frame_counter - top_frameDX) < 25 and (frame_counter - last_score_frameDX) > 50 and (frame_counter - last_score_frameSX) > 50:  # ricerchiamo la presenza della palla nel rettangolo sotto il canestro
             last_score_frameDX = frame_counter  # se e' presente dopo essere stata rilevata nel rettangolo sopra tra 3 e 25 frame prima e l’ultimo score e' stato segnato almeno 50 frame fa salviamo il numero del frame
-            score_DX +=1  # incremento del contatore del numero di canetri rilevati a destra
+            score_DX += 1  # incremento del contatore del numero di canetri rilevati a destra
             print("Score DX numero", score_DX, "al frame:", last_score_frameDX)  # segnaliamo in output il frame attuale a cui e' stato rilevato il canestro destro
             rightResult = svo.draw_rectangle(rightResult, upper_left3, bottom_right3, "green")  # coloriamo il rettangolo di verde
         else:
             rightResult = svo.draw_rectangle(rightResult, upper_left3, bottom_right3, "red")  # altrimenti lasciamo il rettangolo colorato di rosso
 
         # questa parte e' stata utilizzata per valutare che non venisse segnalata nuovamente la presenza della palla nel rettangolo in alto
-        if top_frameDX - last_score_frameDX <  0 and frame_counter - last_score_frameDX == 5:  # effettuiamo un controllo 5 frame dopo che e' stato segnalato il canestro per valutare se la palla e' stata rilevata nuovamente
+        if (top_frameDX - last_score_frameDX) <  0 and (frame_counter - last_score_frameDX) == 5:  # effettuiamo un controllo 5 frame dopo che e' stato segnalato il canestro per valutare se la palla e' stata rilevata nuovamente
             print("Score DX numero", score_DX, "con precauzione top")  # se la condizione e' verificata segnaliamo in output che il canestro e' stato segnato con una ulteriore precauzione
 
 
@@ -193,7 +193,7 @@ if __name__ == "__main__":
         cv.imshow("originalFrameDX", rightCut)
         cv.imshow("returnFrameDX", rightResult)
         
-        key = cv.waitKey(1)  # attesa minima tra un frame e il successivo, ma può essere prolungata per visualizzare più lentamente l’esecuzione dell’algoritmo e capire la cause di eventuali problematiche
+        key = cv.waitKey(1)  # attesa minima di 1 ms tra un frame e il successivo, ma può essere prolungata per visualizzare più lentamente l’esecuzione dell’algoritmo e capire la cause di eventuali problematiche
         if key == 27:  # per ogni evenienza se viene premuto esc si interrompe l’esecuzione
             break
 
