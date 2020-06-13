@@ -135,7 +135,7 @@ if __name__ == "__main__":
     svo = StandardVideoOperations()  # istanza della nostra classe per eseguire le varie operazioni
     capture = cv.VideoCapture("/path/video.asf")  # rileva dal percorso fornito il video da analizzare
    	
-   	# dato lo spostamento della videocamera le coordinate cambiano il base al quarto di gioco preso in analisi
+    # dato lo spostamento della videocamera le coordinate cambiano il base al quarto di gioco preso in analisi
     # da impostare per il 1° quarto
     # svo.set_left((455, 955), (655, 1155))
     # svo.set_right((3145, 895), (3345, 1095))
