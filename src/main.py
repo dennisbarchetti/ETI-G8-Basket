@@ -133,7 +133,7 @@ def main_right():
 if __name__ == "__main__":
 
     svo = StandardVideoOperations()  # istanza della nostra classe per eseguire le varie operazioni
-    capture = cv.VideoCapture("/path/video.asf")  # rileva dal percorso fornito il video da analizzare
+    capture = cv.VideoCapture("/Users/samuelbortolin/PycharmProjects/video/other/quarto_tempo.asf")  # rileva dal percorso fornito il video da analizzare
    	
     # dato lo spostamento della videocamera le coordinate cambiano il base al quarto di gioco preso in analisi
     # da impostare per il 1° quarto
@@ -145,8 +145,8 @@ if __name__ == "__main__":
     # svo.set_right((3185, 900), (3385, 1100))
 
     # da impostare per il 3° e il 4° quarto
-    # svo.set_left((540, 940), (740, 1140))
-    # svo.set_right((3225, 900), (3425, 1100))
+    svo.set_left((540, 940), (740, 1140))
+    svo.set_right((3225, 900), (3425, 1100))
 
     if not capture.isOpened:  # verifica la corretta apertura del video
         print("Unable to open")
